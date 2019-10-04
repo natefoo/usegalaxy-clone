@@ -1,0 +1,21 @@
+[galaxyservers]
+clone0 os_volumes="{{ galaxy_data_volume.name }}" ansible_host=129.114.17.96
+
+[galaxyservers:vars]
+os_flavor = m1.large
+os_security_groups = "default,{{ os_security_group_rules.0.name }}"
+os_auto_ip = true
+
+# FIXME: should be able to use the openstack plugin but need to filter hosts
+[galaxynodes]
+clone0n0 os_flavor=m1.large ansible_host=10.2.0.20 slurm_cpus=10 slurm_real_memory=29995
+
+[galaxynodes:vars]
+os_flavor = m1.large
+os_security_groups = default
+os_auto_ip = false
+ansible_ssh_common_args = -F ./ssh_config
+
+[all:vars]
+ansible_user = centos
+ansible_become = true

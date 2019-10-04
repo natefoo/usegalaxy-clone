@@ -1,0 +1,167 @@
+- name: Spawn instances
+  hosts: all
+  gather_facts: no
+  environment:
+    OS_CLOUD: "{{ os_cloud_id }}"
+    OS_IDENTITY_API_VERSION: '3'
+  tasks:
+    - name: Instance spawn block
+      block:
+
+        - name: Collect image facts
+          os_image_facts:
+          run_once: true
+          delegate_to: localhost
+
+        - name: Find current JS-API-Featured-CentOS7 image
+          set_fact:
+            os_image: "{{ ( openstack_image | selectattr('name', 'match', '(?i)^JS-API-Featured-CentOS7-[A-Z]{3}-\\d{1,2}-\\d{4}$') | list | last ).id }}"
+          run_once: true
+
+        - name: Create network
+          os_network:
+            cloud: "{{ os_cloud_id }}"
+            name: "{{ os_network.name }}"
+          delegate_to: localhost
+          run_once: true
+
+        - name: Create subnet
+          os_subnet:
+            network_name: "{{ os_network.name }}"
+            name: "{{ os_network.subnet.name }}"
+            cidr: "{{ os_network.subnet.cidr }}"
+          delegate_to: localhost
+          run_once: true
+
+        - name: Create router
+          os_router:
+            name: "{{ os_network.router.name }}"
+            network: "{{ os_network.router.network }}"
+            interfaces:
+              - "{{ os_network.subnet.name }}"
+          delegate_to: localhost
+          run_once: true
+
+        - name: Create security groups
+          os_security_group:
+            cloud: "{{ os_cloud_id }}"
+            name: "{{ item.name }}"
+          loop: "{{ os_security_group_rules }}"
+          delegate_to: localhost
+          run_once: true
+
+        - name: Create security group rules
+          os_security_group_rule:
+            cloud: "{{ os_cloud_id }}"
+            security_group: "{{ item.0.name }}"
+            protocol: "{{ item.1.protocol | default(omit) }}"
+            remote_ip_prefix: "{{ item.1.remote_ip_prefix | default(omit) }}"
+            port_range_min: "{{ item.1.port_range_min | default(omit) }}"
+            port_range_max: "{{ item.1.port_range_max | default(omit) }}"
+          loop: "{{ os_security_group_rules | subelements('rules') }}"
+          delegate_to: localhost
+          run_once: true
+
+        - name: Create data volume
+          os_volume:
+            cloud: "{{ os_cloud_id }}"
+            display_name: "{{ galaxy_data_volume.name }}"
+            size: "{{ galaxy_data_volume.size }}"
+          delegate_to: localhost
+          run_once: true
+
+        - name: Spawn new instance
+          os_server:
+            cloud: "{{ os_cloud_id }}"
+            name: "{{ inventory_hostname }}"
+            image: "{{ os_image }}"
+            flavor: "{{ os_flavor }}"
+            key_name: "{{ os_key_name }}"
+            nics: "{{ os_nics }}"
+            security_groups: "{{ os_security_groups }}"
+            auto_ip: "{{ os_auto_ip }}"
+            meta: "group={{ group_names[0] }}"
+            #volumes: "{{ os_volumes | default(omit) }}"
+            #volumes: "{{ os_volumes }}"
+            userdata: |
+              #cloud-config
+              package_upgrade: false
+          delegate_to: localhost
+          register: __spawn_result
+
+        # As far as I can tell, when this runs is the only time you can discover the volume device
+        - name: Attach volume to instance
+          os_server_volume:
+            cloud: "{{ os_cloud_id }}"
+            server: "{{ inventory_hostname }}"
+            volume: "{{ os_volumes }}"
+          delegate_to: localhost
+          when: os_volumes is defined
+          register: __attach_result
+
+        - name: Write volume device to file
+          lineinfile:
+            path: "host_vars/{{ inventory_hostname }}.yaml"
+            line: "galaxy_data_volume_dev: {{ __attach_result.attachments[0].device }}"
+            create: yes
+          when: os_volumes is defined and galaxy_data_volume_dev is undefined
+          delegate_to: localhost
+
+        - name: Set volume device fact
+          set_fact:
+            galaxy_data_volume_dev: "{{ __attach_result.attachments[0].device }}"
+          when: os_volumes is defined and galaxy_data_volume_dev is undefined
+          #delegate_to: localhost
+
+        - name: Update inventory with spawned instance IP
+          set_fact:
+            ansible_host: "{{ __spawn_result.server.public_v4 or __spawn_result.server.private_v4 }}"
+          #delegate_to: localhost
+
+        - name: Log IP addresses
+          debug:
+            var: ansible_host
+
+        - name: Wait for instance to become accessible
+          wait_for_connection:
+            timeout: 120
+
+- name: Galaxy server initial setup
+  hosts: galaxyservers
+  tasks:
+
+    - name: Make Galaxy data filesystem
+      filesystem:
+        dev: "{{ galaxy_data_volume_dev }}"
+        fstype: xfs
+
+    - name: Mount Galaxy data filesystem
+      mount:
+        src: "{{ galaxy_data_volume_dev }}"
+        path: "{{ galaxy_data_path }}"
+        fstype: xfs
+        state: mounted
+
+    - name: Create exports file
+      copy:
+        content: |
+          {{ galaxy_data_path }}   {{ (ansible_default_ipv4.network ~ '/' ~ ansible_default_ipv4.netmask) | ipaddr('net') }}(rw,no_subtree_check,root_squash)
+        dest: /etc/exports.d/galaxy.exports
+
+    - name: Enable and (re)start nfs services
+      service:
+        name: nfs-server
+        state: restarted
+        enabled: yes
+
+
+- name: Galaxy node initial setup
+  hosts: galaxynodes
+  tasks:
+
+    - name: Mount Galaxy data filesystem
+      mount:
+        src: "{{ galaxy_data_addr }}:/galaxy"
+        path: "{{ galaxy_data_path }}"
+        fstype: nfs
+        state: mounted

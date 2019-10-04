@@ -1,0 +1,11 @@
+---
+
+- name: galaxyproject.repos
+- name: galaxyproject.cvmfs
+- name: galaxyproject.slurm
+- name: galaxyproject.postgresql
+- name: natefoo.postgresql_objects
+- name: galaxyproject.galaxy
+- name: usegalaxy-eu.certbot
+  src: https://github.com/usegalaxy-eu/ansible-certbot.git/
+- name: galaxyproject.nginx

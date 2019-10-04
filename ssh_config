@@ -1,0 +1,13 @@
+Host 10.*
+    User centos
+    #IdentityFile id_rsa_jetstream
+    UserKnownHostsFile /dev/null
+    StrictHostKeyChecking no
+    ProxyCommand ssh -W %h:%p -F ssh_config clone-test.usegalaxy.org
+
+Host clone-test.usegalaxy.org
+    User centos
+    #IdentityFile id_rsa_jetstream
+    ControlMaster auto
+    ControlPath ~/.ssh/ansible-%r@%h:%p
+    ControlPersist 5m

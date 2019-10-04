@@ -1,0 +1,113 @@
+---
+
+- name: Install system components
+  hosts: all
+
+  pre_tasks:
+    - name: Disable selinux
+      selinux:
+        state: disabled
+
+  roles:
+    - role: galaxyproject.repos
+      tags: slurm
+
+    - role: galaxyproject.cvmfs
+      tags: cvmfs
+
+    - role: galaxyproject.slurm
+      tags: slurm
+
+  tags: system
+
+
+- name: Install a usegalaxy.org clone
+  hosts: galaxyservers
+
+  pre_tasks:
+    - name: Install psycopg2
+      package:
+        name: python-psycopg2
+
+    - name: Create well-known root for certbot
+      file:
+        path: "{{ certbot_well_known_root }}"
+        state: directory
+
+  roles:
+    - role: galaxyproject.postgresql
+      tags: postgres
+
+    - role: natefoo.postgresql_objects
+      become: true
+      become_user: postgres
+      tags: postgres
+
+    - role: galaxyproject.galaxy
+      tags: galaxy
+
+    - role: galaxyproject.nginx
+      tags: nginx
+
+  post_tasks:
+    - name: Install slurm-drmaa
+      package:
+        name: slurm-drmaa
+      tags: system
+
+    - name: Add nginx to Galaxy group
+      user:
+        name: nginx
+        groups: "{{ galaxy_group.name }}"
+      notify:
+        - restart nginx
+      tags: nginx
+
+    - name: Galaxy post-tasks block
+      block:
+
+        - name: Install service unit
+          copy:
+            src: files/galaxy.service
+            dest: /etc/systemd/system/galaxy.service
+          notify:
+            - systemd daemon-reload
+
+        - name: Flush handlers
+          meta: flush_handlers
+
+        - name: Ensure Galaxy is started and enabled
+          service:
+            name: galaxy
+            state: started
+            enabled: yes
+
+      tags: galaxy
+
+  handlers:
+    - name: restart galaxy
+      service:
+        name: galaxy
+        state: restarted
+
+    - name: systemd daemon-reload
+      systemd:
+        daemon_reload: yes
+
+
+- name: Create galaxy user on nodes
+  hosts: galaxynodes
+  tasks:
+    - name: Create galaxy group
+      group:
+        name: "{{ galaxy_group.name }}"
+        gid: "{{ galaxy_group.gid }}"
+        system: true
+
+    - name: Create galaxy user
+      user:
+        name: "{{ galaxy_user.name }}"
+        uid: "{{ galaxy_user.uid }}"
+        home: "{{ galaxy_user.home }}"
+        shell: "{{ galaxy_user.shell }}"
+        system: true

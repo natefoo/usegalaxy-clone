@@ -1,0 +1,109 @@
+---
+
+cluster_name: clone0
+
+galaxy_data_volume:
+  name: "usegalaxy-{{ cluster_name }}-data"
+  size: 1024
+galaxy_data_path: /galaxy
+galaxy_data_addr: 10.2.0.13
+
+os_cloud_id: "jetstream_tacc"
+os_key_name: "nate_jetstream"
+os_nics: "net-name={{ os_network.name }}"
+#os_security_groups: "default"
+#os_auto_ip: no
+
+os_network:
+  name: "usegalaxy-{{ cluster_name }}-net"
+  subnet:
+    name: "usegalaxy-{{ cluster_name }}-subnet"
+    cidr: 10.2.0.0/20
+  router:
+    name: "usegalaxy-{{ cluster_name }}-rtr"
+    network: public
+
+os_security_group_rules:
+  - name: "usegalaxy-{{ cluster_name }}-sg"
+    rules:
+      - protocol: tcp
+        remote_ip_prefix: 0.0.0.0/0
+        port_range_min: 22
+        port_range_max: 22
+      - protocol: tcp
+        remote_ip_prefix: 0.0.0.0/0
+        port_range_min: 80
+        port_range_max: 80
+      - protocol: tcp
+        remote_ip_prefix: 0.0.0.0/0
+        port_range_min: 443
+        port_range_max: 443
+
+cvmfs_role: client
+galaxy_cvmfs_repos_enabled: config-repo
+
+slurm_munge_key: files/slurm/munge.key
+slurm_create_user: yes
+slurm_user:
+  name: slurm
+  group: slurm
+  uid: 994
+  gid: 991
+  home: /home/slurm
+  shell: /bin/bash
+  system: true
+
+slurm_config:
+  ControlMachine: "{{ groups.galaxyservers[0] }}"
+  # this is the public v4
+  #ControlAddr: "{{ hostvars[groups.galaxyservers[0]].ansible_host }}"
+  ControlAddr: 10.2.0.13
+  SelectType: select/cons_res
+  SelectTypeParameters: CR_CPU_Memory
+  SlurmctldLogFile: /var/log/slurm/slurmctld.log
+  SlurmdLogFile: /var/log/slurm/slurmd.log
+  SlurmctldDebug: 4
+  SlurmdDebug: 4
+
+  FastSchedule: 1
+  ReturnToService: 1
+
+  JobAcctGatherType: jobacct_gather/cgroup
+  JobAcctGatherFrequency: task=15
+  ProctrackType: proctrack/cgroup
+  TaskPlugin: task/cgroup
+
+slurm_nodes:
+  - name: "{{ groups.galaxynodes[0] }}"
+    NodeAddr: "{{ hostvars[groups.galaxynodes[0]].ansible_host }}"
+    CPUs: "{{ hostvars[groups.galaxynodes[0]].slurm_cpus }}"
+    RealMemory: "{{ hostvars[groups.galaxynodes[0]].slurm_real_memory }}"
+  #- name: "{{ groups.galaxynodes[1] }}.{{ domain }}"
+
+slurm_partitions:
+  - name: debug
+    Default: YES
+    Nodes: "{{ cluster_name }}n0"
+    State: UP
+    DefMemPerCPU: 2990
+
+slurm_cgroup_config:
+  CgroupAutomount: yes
+  ConstrainCores: yes
+  ConstrainRAMSpace: yes
+  ConstrainSwapSpace: yes
+
+galaxy_server_hostname: clone-test.usegalaxy.org
+
+galaxy_group:
+  name: galaxy
+  gid: 989
+  system: true
+
+galaxy_user:
+  name: galaxy
+  uid: 992
+  group: galaxy
+  home: /home/galaxy
+  shell: /bin/bash
+  system: true

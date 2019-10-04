@@ -1,0 +1,95 @@
+##
+## This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+##
+
+server {
+    listen       *:443 ssl default_server;
+    server_name  {{ galaxy_server_hostname }};
+
+    # Enable HSTS (age is 180 days)
+    add_header Strict-Transport-Security "max-age=15552000; includeSubdomains";
+
+    access_log  /var/log/nginx/main.access.log;
+    error_log   /var/log/nginx/main.error.log;
+
+    location / {
+        uwsgi_pass {{ galaxy_config.uwsgi.socket }};
+        uwsgi_param UWSGI_SCHEME $scheme;
+        include uwsgi_params;
+    }
+
+    location /static {
+        alias {{ galaxy_server_dir }}/static;
+        expires 24h;
+    }
+
+    location /static/style {
+        alias {{ galaxy_server_dir }}/static/style/blue;
+        expires 24h;
+    }
+
+    location /static/scripts {
+        alias {{ galaxy_server_dir }}/static/scripts;
+        expires 24h;
+    }
+
+    {#
+    location ~ ^/plugins/interactive_environments/(?<vis_name>.+?)/static/(?<static_file>.*?)$ {
+        alias {{ interactive_environments_plugins_path }}/$plug_type/$vis_name/static/$static_file;
+    }
+    #}
+
+    # serve visualization and interactive environment plugin static content
+    location ~ ^/plugins/(?<plug_type>[^/]+?)/((?<vis_d>[^/_]*)_?)?(?<vis_name>[^/]*?)/static/(?<static_file>.*?)$ {
+        alias {{ galaxy_server_dir }}/config/plugins/$plug_type/;
+        try_files $vis_d/${vis_d}_${vis_name}/static/$static_file
+                  $vis_d/static/$static_file =404;
+    }
+
+    location /robots.txt {
+        alias {{ galaxy_server_dir }}/static/robots.txt;
+    }
+
+    location /favicon.ico {
+        alias {{ galaxy_server_dir }}/static/favicon.ico;
+    }
+
+    location /_x_accel_redirect {
+        internal;
+        alias /;
+        add_header X-Frame-Options SAMEORIGIN;
+        add_header X-Content-Type-Options nosniff;
+        # CORS
+        add_header Access-Control-Allow-Origin "http://registry.intermine.org";
+    }
+
+    # regular proxy
+    location /gie_proxy {
+        proxy_pass http://galaxy-web-05.tacc.utexas.edu:8800/gie_proxy;
+        proxy_redirect off;
+    }
+
+    # websocket for kernels
+    location ~ ^/gie_proxy/jupyter/(?<nbtype>[^/]+)/api/kernels(?<rest>/.*)?$ {
+        proxy_pass http://galaxy-web-05.tacc.utexas.edu:8800/gie_proxy/jupyter/$nbtype/api/kernels$rest;
+        proxy_redirect off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    location /static/welcome.html {
+        alias {{ galaxy_server_dir }}/static/welcome.html.sample;
+    }
+
+    # error docs
+    error_page  502 503 504 /error/502/index.shtml;
+    error_page  413         /error/413/index.html;
+    location /error {
+        ssi on;
+        root {{ nginx_srv }};
+    }
+
+}
+
+# vim: set filetype=nginx

@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!--
+    This file is maintained by Ansible - CHANGES WILL BE OVERWRITTEN
+-->
+<job_conf>
+    <plugins workers="3">
+        <plugin id="slurm" type="runner" load="galaxy.jobs.runners.slurm:SlurmJobRunner">
+            <param id="drmaa_library_path">/usr/lib64/libdrmaa.so</param>
+            <param id="invalidjobexception_retries">5</param>
+            <param id="internalexception_retries">5</param>
+        </plugin>
+    </plugins>
+    <handlers assign_with="db-skip-locked" max_grab="8"/>
+    <destinations default="normal">
+        <destination id="normal" runner="slurm">
+            <param id="nativeSpecification">--nodes=1 --cpus-per-task=1 --time=00:30:00</param>
+            <env id="PATH">/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin</env>
+            <env id="_JAVA_OPTIONS">$_JAVA_OPTIONS -Xmx4g -Xms256m</env>
+            <env id="XDG_DATA_HOME">/cvmfs/main.galaxyproject.org/xdg/data</env>
+            <env id="TEMP">$(dirname ${BASH_SOURCE[0]})/_job_tmp</env>
+            <env id="TMPDIR">$TEMP</env>
+            <env id="_JAVA_OPTIONS">-Djava.io.tmpdir=$TEMP</env>
+            <env exec="mkdir -p $TEMP" />
+        </destination>
+        <destination id="multi" runner="slurm">
+            <param id="nativeSpecification">--nodes=1 --cpus-per-task=2 --time=00:30:00</param>
+            <env id="PATH">/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin</env>
+            <env id="_JAVA_OPTIONS">$_JAVA_OPTIONS -Xmx4g -Xms256m</env>
+            <env id="XDG_DATA_HOME">/cvmfs/main.galaxyproject.org/xdg/data</env>
+            <env id="TEMP">$(dirname ${BASH_SOURCE[0]})/_job_tmp</env>
+            <env id="TMPDIR">$TEMP</env>
+            <env id="_JAVA_OPTIONS">-Djava.io.tmpdir=$TEMP</env>
+            <env exec="mkdir -p $TEMP" />
+        </destination>
+    </destinations>
+    <tools>
+        <tool destination="multi" id="gemini_load" />
+        <tool destination="multi" id="deeptools_bam_compare" />
+        <tool destination="multi" id="deeptools_bam_coverage" />
+        <tool destination="multi" id="deeptools_bam_pe_fragmentsize" />
+        <tool destination="multi" id="deeptools_bigwig_compare" />
+        <tool destination="multi" id="deeptools_compute_gc_bias" />
+        <tool destination="multi" id="deeptools_compute_matrix" />
+        <tool destination="multi" id="deeptools_correct_gc_bias" />
+        <tool destination="multi" id="deeptools_multi_bam_summary" />
+        <tool destination="multi" id="deeptools_multi_bigwig_summary" />
+        <tool destination="multi" id="deeptools_plot_coverage" />
+        <tool destination="multi" id="deeptools_plot_fingerprint" />
+        <tool destination="multi" id="kraken" />
+        <tool destination="multi" id="ideas" />
+        <tool destination="multi" id="bwa" />
+        <tool destination="multi" id="bwa_mem" />
+        <tool destination="multi" id="bwa_wrapper" />
+        <tool destination="multi" id="bowtie2" />
+        <tool destination="multi" id="bowtie_wrapper" />
+        <tool destination="multi" id="tophat" />
+        <tool destination="multi" id="tophat2" />
+        <tool destination="multi" id="cuffdiff" />
+        <tool destination="multi" id="cufflinks" />
+        <tool destination="multi" id="cuffmerge" />
+        <tool destination="multi" id="cuffnorm" />
+        <tool destination="multi" id="cuffquant" />
+        <tool destination="multi" id="stringtie" />
+        <tool destination="multi" id="hisat2" />
+        <tool destination="multi" id="prokka" />
+        <tool destination="multi" id="rbc_mafft" />
+        <tool destination="multi" id="megablast_wrapper" />
+        <tool destination="multi" id="bwa_color_wrapper" />
+        <tool destination="multi" id="bowtie_color_wrapper" />
+        <tool destination="multi" id="trinity_psc" />
+        <tool destination="multi" id="trinity" />
+        <tool destination="multi" id="spades" />
+        <tool destination="multi" id="rnaspades" />
+        <tool destination="multi" id="unicycler" />
+        <tool destination="multi" id="align_families" />
+        <tool destination="multi" id="rna_star" />
+        <tool destination="multi" id="align_families" />
+        <!--
+        <tool id="wig_to_bigWig" destination="dynamic_normal_64gb_reserved"/>
+        <tool id="CONVERTER_bedgraph_to_bigwig" destination="dynamic_normal_64gb_reserved"/>
+        -->
+    </tools>
+    <limits>
+        <limit type="registered_user_concurrent_jobs">2</limit>
+        <limit type="anonymous_user_concurrent_jobs">1</limit>
+    </limits>
+</job_conf>
