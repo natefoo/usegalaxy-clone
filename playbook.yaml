@@ -10,13 +10,13 @@
 
   roles:
     - role: galaxyproject.repos
-      tags: slurm
+      #tags: slurm
 
     - role: galaxyproject.cvmfs
-      tags: cvmfs
+      #tags: cvmfs
 
     - role: galaxyproject.slurm
-      tags: slurm
+      #tags: slurm
 
   tags: system
 
