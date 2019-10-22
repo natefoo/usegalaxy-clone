@@ -79,7 +79,11 @@ server {
     }
 
     location /static/welcome.html {
-        alias {{ galaxy_server_dir }}/static/welcome.html.sample;
+        alias {{ galaxy_welcome_dir }}/welcome.html;
+    }
+
+    location /_welcome {
+        alias {{ galaxy_welcome_dir }};
     }
 
     # error docs

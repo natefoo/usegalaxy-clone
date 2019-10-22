@@ -8,6 +8,14 @@
       selinux:
         state: disabled
 
+    - name: Install authorized keys
+      authorized_key:
+        user: "{{ ansible_user }}"
+        key: "{{ item }}"
+      loop:
+        - https://github.com/natefoo.keys
+        - https://github.com/nekrut.keys
+
   roles:
     - role: galaxyproject.repos
       #tags: slurm
@@ -82,7 +90,21 @@
             state: started
             enabled: yes
 
-      tags: galaxy
+        - name: Create welcome directory
+          file:
+            path: "{{ galaxy_welcome_dir }}"
+            state: directory
+            owner: "{{ galaxy_user }}"
+            group: "{{ galaxy_group.name }}"
+
+        - name: Copy welcome contents
+          synchronize:
+            src: files/galaxy/welcome/
+            dest: "{{ galaxy_welcome_dir }}"
+
+      tags:
+        - galaxy
+        - galaxy-post
 
   handlers:
     - name: restart galaxy
