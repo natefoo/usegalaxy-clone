@@ -20,11 +20,52 @@
     - role: galaxyproject.repos
       #tags: slurm
 
-    - role: galaxyproject.cvmfs
-      #tags: cvmfs
+    # FIXME: running patches for GxITs
+    #- role: galaxyproject.cvmfs
+    #  #tags: cvmfs
 
     - role: galaxyproject.slurm
       #tags: slurm
+
+  post_tasks:
+    - name: Import Docker CE RPM key
+      rpm_key:
+        key: https://download.docker.com/linux/centos/gpg
+
+    - name: Configure Docker CE yum repository
+      yum_repository:
+        name: "docker-ce"
+        description: "Docker CE Stable - $basearch"
+        baseurl: "https://download.docker.com/linux/centos/7/$basearch/stable"
+        #gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Docker-CE"
+        gpgcheck: yes
+        enabled: yes
+
+    - name: Install Docker CE
+      yum:
+        pkg:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+
+    - name: Create Docker configuration directory
+      file:
+        path: /etc/docker
+        state: directory
+
+    - name: Configure Docker daemon options
+      copy:
+        content: |
+          {
+            "storage-driver": "overlay2"
+          }
+        dest: /etc/docker/daemon.json
+
+    - name: Ensure Docker is started and enabled
+      service:
+        name: docker
+        state: started
+        enabled: yes
 
   tags: system
 
@@ -74,21 +115,32 @@
     - name: Galaxy post-tasks block
       block:
 
+        - name: Add Galaxy to Docker group
+          user:
+            name: "{{ galaxy_user }}"
+            groups: docker
+
         - name: Install service unit
           copy:
-            src: files/galaxy.service
-            dest: /etc/systemd/system/galaxy.service
+            src: files/{{ item }}.service
+            dest: /etc/systemd/system/{{ item }}.service
+          loop:
+            - galaxy
+            - galaxy-gxit-proxy
           notify:
             - systemd daemon-reload
 
         - name: Flush handlers
           meta: flush_handlers
 
-        - name: Ensure Galaxy is started and enabled
+        - name: Ensure Galaxy services are started and enabled
           service:
-            name: galaxy
+            name: "{{ item }}"
             state: started
             enabled: yes
+          loop:
+            - galaxy
+            - galaxy-gxit-proxy
 
         - name: Create welcome directory
           file:
@@ -132,4 +184,6 @@
         uid: "{{ galaxy_user.uid }}"
         home: "{{ galaxy_user.home }}"
         shell: "{{ galaxy_user.shell }}"
+        group: "{{ galaxy_group.name }}"
+        groups: docker
         system: true

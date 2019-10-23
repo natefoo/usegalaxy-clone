@@ -25,6 +25,7 @@ nginx_servers:
 nginx_enable_default_server: false
 nginx_ssl_servers:
   - clone-ssl
+  - clone-gxit-proxy
 nginx_conf_http:
   client_max_body_size: 1g
 nginx_remove_default_vhost: true
@@ -35,6 +36,8 @@ nginx_conf_ssl_certificate_key: /etc/ssl/user/privkey-nginx.pem
 #
 # Galaxy
 #
+
+galaxy_gxit_proxy_config_file: "{{ galaxy_config_dir }}/gxit-proxy.yaml"
 
 # used by: galaxy_config var
 galaxy_config_id_secret: "{{ vault_galaxy_config_id_secret }}"
@@ -319,6 +322,8 @@ galaxy_config:
     legacy_eager_objectstore_initialization: "True"
 
     allow_user_impersonation: "True"
+    interactivetools_enable: "True"
+    interactivetools_map: "{{ galaxy_mutable_data_dir }}/interactivetools_map.sqlite"
 
 # specifies config files to copy from the playbook
 galaxy_config_files:
@@ -345,6 +350,8 @@ galaxy_config_templates:
     dest: "{{ galaxy_config_dir }}/job_conf.xml"
   - src: templates/galaxy/config/build_sites.yml.j2
     dest: "{{ galaxy_config['galaxy']['build_sites_config_file'] }}"
+  - src: templates/galaxy/config/gxit-proxy.yaml.j2
+    dest: "{{ galaxy_gxit_proxy_config_file }}"
 
 # doesn't overwrite if it already exists
 galaxy_mutable_config_templates:

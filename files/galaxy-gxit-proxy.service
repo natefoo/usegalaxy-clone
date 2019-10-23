@@ -1,5 +1,5 @@
 [Unit]
-Description=Galaxy Server
+Description=Galaxy InteractiveTools Proxy
 Documentation=https://docs.galaxyproject.org/
 After=network.target
 
@@ -13,7 +13,7 @@ Group=galaxy
 WorkingDirectory=/cvmfs/main.galaxyproject.org/galaxy
 Environment=VIRTUAL_ENV=/cvmfs/main.galaxyproject.org/venv
 
-ExecStart=/cvmfs/main.galaxyproject.org/venv/bin/uwsgi --yaml /galaxy/config/galaxy.yaml
+ExecStart=/cvmfs/main.galaxyproject.org/venv/bin/uwsgi --yaml /galaxy/config/gxit-proxy.yaml
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=mixed
 KillSignal=SIGINT

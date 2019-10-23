@@ -142,10 +142,11 @@
         fstype: xfs
         state: mounted
 
+    # Root squashing breaks docker mount
     - name: Create exports file
       copy:
         content: |
-          {{ galaxy_data_path }}   {{ (ansible_default_ipv4.network ~ '/' ~ ansible_default_ipv4.netmask) | ipaddr('net') }}(rw,no_subtree_check,root_squash)
+          {{ galaxy_data_path }}   {{ (ansible_default_ipv4.network ~ '/' ~ ansible_default_ipv4.netmask) | ipaddr('net') }}(rw,no_subtree_check,no_root_squash)
         dest: /etc/exports.d/galaxy.exports
 
     - name: Enable and (re)start nfs services

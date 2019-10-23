@@ -32,6 +32,16 @@
             <env id="_JAVA_OPTIONS">-Djava.io.tmpdir=$TEMP</env>
             <env exec="mkdir -p $TEMP" />
         </destination>
+        <destination id="interactive" runner="slurm">
+            <param id="nativeSpecification">--nodes=1 --cpus-per-task=1 --time=00:60:00</param>
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$galaxy_root:ro,$tool_directory:ro,$job_directory:rw,$working_directory:rw,$default_file_path:ro</param>
+            <param id="docker_sudo">false</param>
+            <param id="docker_net">bridge</param>
+            <param id="docker_auto_rm">false</param>
+            <param id="docker_set_user"></param>
+            <param id="require_container">true</param>
+        </destination>
     </destinations>
     <tools>
         <tool destination="multi" id="gemini_load" />
@@ -79,6 +89,7 @@
         <tool id="wig_to_bigWig" destination="dynamic_normal_64gb_reserved"/>
         <tool id="CONVERTER_bedgraph_to_bigwig" destination="dynamic_normal_64gb_reserved"/>
         -->
+        <tool destination="interactive" id="interactive_tool_jupyter_notebook" />
     </tools>
     <limits>
         <limit type="registered_user_concurrent_jobs">2</limit>
