@@ -73,6 +73,8 @@ slurm_config:
   ProctrackType: proctrack/cgroup
   TaskPlugin: task/cgroup
 
+  Epilog: /opt/slurm/sbin/epilog
+
 slurm_nodes:
   - name: "{{ groups.galaxynodes[0] }}"
     NodeAddr: "{{ hostvars[groups.galaxynodes[0]].ansible_host }}"

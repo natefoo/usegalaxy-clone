@@ -95,6 +95,9 @@
     - role: galaxyproject.galaxy
       tags: galaxy
 
+    - role: usegalaxy-eu.gie-proxy
+      tags: galaxy
+
     - role: galaxyproject.nginx
       tags: nginx
 
@@ -126,7 +129,7 @@
             dest: /etc/systemd/system/{{ item }}.service
           loop:
             - galaxy
-            - galaxy-gxit-proxy
+            #- galaxy-gxit-proxy
           notify:
             - systemd daemon-reload
 
@@ -140,7 +143,7 @@
             enabled: yes
           loop:
             - galaxy
-            - galaxy-gxit-proxy
+            #- galaxy-gxit-proxy
 
         - name: Create welcome directory
           file:
@@ -187,3 +190,20 @@
         group: "{{ galaxy_group.name }}"
         groups: docker
         system: true
+
+    - name: Install jq for Epilog script
+      package:
+        name: jq
+
+    - name: Ensure Epilog script directory exists
+      file:
+        path: "{{ slurm_config.Epilog |dirname }}"
+        state: directory
+
+    - name: Install Epilog script
+      copy:
+        src: slurm/epilog.sh
+        dest: "{{ slurm_config.Epilog }}"
+        owner: root
+        group: root
+        mode: '0755'
