@@ -10,4 +10,4 @@
   src: https://github.com/usegalaxy-eu/ansible-certbot.git/
 - name: galaxyproject.nginx
 - name: usegalaxy-eu.gie-proxy
-  src: https://github.com/natefoo/ansible-gie-proxy.git/
+  src: https://github.com/usegalaxy-eu/ansible-gie-proxy.git/
