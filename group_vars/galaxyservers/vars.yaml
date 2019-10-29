@@ -253,7 +253,7 @@ galaxy_config:
     #dynamic_proxy_debug: "True"
     #dynamic_proxy_external_proxy: "True"
     #dynamic_proxy_prefix: gie_proxy
-    #galaxy_infrastructure_url: https://usegalaxy.org
+    galaxy_infrastructure_url: https://{{ galaxy_server_hostname }}
     ##trust_ipython_notebook_conversion: "True"
 
 
@@ -367,7 +367,8 @@ galaxy_mutable_config_templates:
 #
 
 gie_proxy_dir: /srv/gie-proxy/proxy
-gie_proxy_git_version: ie2
+gie_proxy_git_repo: https://github.com/natefoo/gie-nodejs-proxy.git
+gie_proxy_git_version: ie2-log-fix
 gie_proxy_setup_nodejs: nodeenv
 gie_proxy_nodejs_version: "10.13.0"
 gie_proxy_virtualenv: /srv/gie-proxy/venv
