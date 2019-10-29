@@ -3,9 +3,9 @@ Host 10.*
     #IdentityFile id_rsa_jetstream
     UserKnownHostsFile /dev/null
     StrictHostKeyChecking no
-    ProxyCommand ssh -W %h:%p -F ssh_config clone-test.usegalaxy.org
+    ProxyCommand ssh -W %h:%p -F ssh_config workshop.usegalaxy.org
 
-Host clone-test.usegalaxy.org
+Host workshop.usegalaxy.org
     User centos
     #IdentityFile id_rsa_jetstream
     ControlMaster auto

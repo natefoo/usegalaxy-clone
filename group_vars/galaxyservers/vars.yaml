@@ -325,6 +325,8 @@ galaxy_config:
     interactivetools_enable: "True"
     interactivetools_map: "{{ gie_proxy_sessions_path }}"
 
+    brand: Workshop
+
 # specifies config files to copy from the playbook
 galaxy_config_files:
   - src: files/galaxy/config/tool_data_table_conf.xml

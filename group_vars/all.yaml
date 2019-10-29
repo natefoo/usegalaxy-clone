@@ -95,7 +95,7 @@ slurm_cgroup_config:
   ConstrainRAMSpace: yes
   ConstrainSwapSpace: yes
 
-galaxy_server_hostname: clone-test.usegalaxy.org
+galaxy_server_hostname: workshop.usegalaxy.org
 
 galaxy_group:
   name: galaxy
