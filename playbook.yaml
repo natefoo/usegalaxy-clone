@@ -31,6 +31,15 @@
       tags: slurm
 
   post_tasks:
+    # AutoFS unmounts CVMFS while Docker is using it and then can't be mounted until Docker stop using it?
+    - name:
+      lineinfile:
+        path: /etc/autofs.conf
+        line: 'timeout = 7200'
+        insertafter: '^\[ autofs \]$'
+        regexp: '^[# ]*timeout *=.*'
+        backup: yes
+
     - name: Import Docker CE RPM key
       rpm_key:
         key: https://download.docker.com/linux/centos/gpg
