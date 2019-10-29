@@ -4,6 +4,10 @@
   hosts: all
 
   pre_tasks:
+    - name: Gathering Facts
+      gather_facts:
+      tags: always
+
     - name: Disable selinux
       selinux:
         state: disabled
@@ -18,14 +22,13 @@
 
   roles:
     - role: galaxyproject.repos
-      #tags: slurm
+      tags: slurm
 
-    # FIXME: running patches for GxITs
-    #- role: galaxyproject.cvmfs
-    #  #tags: cvmfs
+    - role: galaxyproject.cvmfs
+      tags: cvmfs
 
     - role: galaxyproject.slurm
-      #tags: slurm
+      tags: slurm
 
   post_tasks:
     - name: Import Docker CE RPM key
