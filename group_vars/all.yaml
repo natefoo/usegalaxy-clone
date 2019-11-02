@@ -92,12 +92,20 @@ slurm_nodes:
     NodeAddr: "{{ hostvars[groups.galaxynodes[3]].ansible_host }}"
     CPUs: "{{ hostvars[groups.galaxynodes[3]].slurm_cpus }}"
     RealMemory: "{{ hostvars[groups.galaxynodes[3]].slurm_real_memory }}"
+  - name: "{{ groups.galaxynodes[4] }}"
+    NodeAddr: "{{ hostvars[groups.galaxynodes[4]].ansible_host }}"
+    CPUs: "{{ hostvars[groups.galaxynodes[4]].slurm_cpus }}"
+    RealMemory: "{{ hostvars[groups.galaxynodes[4]].slurm_real_memory }}"
+  - name: "{{ groups.galaxynodes[5] }}"
+    NodeAddr: "{{ hostvars[groups.galaxynodes[5]].ansible_host }}"
+    CPUs: "{{ hostvars[groups.galaxynodes[5]].slurm_cpus }}"
+    RealMemory: "{{ hostvars[groups.galaxynodes[5]].slurm_real_memory }}"
   #- name: "{{ groups.galaxynodes[1] }}.{{ domain }}"
 
 slurm_partitions:
   - name: debug
     Default: YES
-    Nodes: "{{ cluster_name }}n[0-3]"
+    Nodes: "{{ cluster_name }}n[0-5]"
     State: UP
     DefMemPerCPU: 2990
 
