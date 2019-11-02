@@ -79,6 +79,12 @@
         state: started
         enabled: yes
 
+    # Need python-docker-py, the image is already pulled so I'm not going to mess with this now 2 hours before the workshop
+    #- name: Ensure Jupyter GIE image is pulled
+    #  docker_image:
+    #    name: quay.io/bgruening/docker-jupyter-notebook:ie2
+    #    source: pull
+
   tags: system
 
 

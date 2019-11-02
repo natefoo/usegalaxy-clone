@@ -108,6 +108,7 @@ slurm_partitions:
     Nodes: "{{ cluster_name }}n[0-5]"
     State: UP
     DefMemPerCPU: 2990
+    LLN: YES
 
 slurm_cgroup_config:
   CgroupAutomount: yes
