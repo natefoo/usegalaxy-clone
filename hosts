@@ -9,11 +9,13 @@ os_auto_ip = true
 # FIXME: should be able to use the openstack plugin but need to filter hosts
 [galaxynodes]
 clone0n0 ansible_host=10.2.0.20
-clone0n1 ansible_host=10.2.0.7
-clone0n2 ansible_host=10.2.0.3
-clone0n3 ansible_host=10.2.0.5
-clone0n4 ansible_host=10.2.0.6
-clone0n5 ansible_host=10.2.0.14
+#clone0n1 ansible_host=10.2.0.7
+#clone0n2 ansible_host=10.2.0.3
+#clone0n3 ansible_host=10.2.0.5
+#clone0n4 ansible_host=10.2.0.6
+#clone0n5 ansible_host=10.2.0.14
+#clone0n6 ansible_host=10.2.0.10
+#clone0n7 ansible_host=10.2.0.11
 
 [galaxynodes:vars]
 os_flavor = m1.large

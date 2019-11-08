@@ -18,3 +18,5 @@ developed the playbook orginically for the first node) the Galaxy GID was alread
 **TODO**
 
 - Pull sanitize_whitelist.txt and integrated_tool_panel.xml from Github so they don't get out of date.
+- PostgreSQL tuning was applied by hand from my phone ;P
+- Node addition in the slurm config vars is tedious, can this be improved somehow?
