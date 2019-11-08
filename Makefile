@@ -3,7 +3,7 @@ TAGS_ARG="--tags=$(TAGS)"
 endif
 
 
-playbook:
+all:
 	ansible-playbook playbook.yaml $(TAGS_ARG)
 
 server:
@@ -18,4 +18,4 @@ launch:
 welcome:
 	ansible galaxyservers -m synchronize -a "src=files/galaxy/welcome/ dest={{ galaxy_welcome_dir }}"
 
-.PHONY: playbook server nodes launch welcome
+.PHONY: all server nodes launch welcome
