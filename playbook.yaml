@@ -20,6 +20,25 @@
         - https://github.com/natefoo.keys
         - https://github.com/nekrut.keys
 
+    # This is done early because the node will be active as of the end of the slurm role, if jobs are assigned to it
+    # before the epilog is installed, it will drain
+    - name: Install jq for Epilog script
+      package:
+        name: jq
+
+    - name: Ensure Epilog script directory exists
+      file:
+        path: "{{ slurm_config.Epilog |dirname }}"
+        state: directory
+
+    - name: Install Epilog script
+      copy:
+        src: slurm/epilog.sh
+        dest: "{{ slurm_config.Epilog }}"
+        owner: root
+        group: root
+        mode: '0755'
+
   roles:
     - role: galaxyproject.repos
       tags: slurm
@@ -208,20 +227,3 @@
         group: "{{ galaxy_group.name }}"
         groups: docker
         system: true
-
-    - name: Install jq for Epilog script
-      package:
-        name: jq
-
-    - name: Ensure Epilog script directory exists
-      file:
-        path: "{{ slurm_config.Epilog |dirname }}"
-        state: directory
-
-    - name: Install Epilog script
-      copy:
-        src: slurm/epilog.sh
-        dest: "{{ slurm_config.Epilog }}"
-        owner: root
-        group: root
-        mode: '0755'
