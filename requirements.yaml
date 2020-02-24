@@ -6,8 +6,6 @@
 - name: galaxyproject.postgresql
 - name: natefoo.postgresql_objects
 - name: galaxyproject.galaxy
-- name: usegalaxy-eu.certbot
-  src: https://github.com/usegalaxy-eu/ansible-certbot.git/
+- name: usegalaxy_eu.certbot
 - name: galaxyproject.nginx
-- name: usegalaxy-eu.gie-proxy
-  src: https://github.com/usegalaxy-eu/ansible-gie-proxy.git/
+- name: usegalaxy_eu.gie_proxy

@@ -132,7 +132,7 @@
     - role: galaxyproject.galaxy
       tags: galaxy
 
-    - role: usegalaxy-eu.gie-proxy
+    - role: usegalaxy_eu.gie_proxy
       tags: galaxy
 
     - role: galaxyproject.nginx
