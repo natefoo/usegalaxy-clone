@@ -50,14 +50,22 @@
       tags: slurm
 
   post_tasks:
-    # AutoFS unmounts CVMFS while Docker is using it and then can't be mounted until Docker stop using it?
+    # AutoFS unmounts CVMFS while Docker has a bind mount and then can't be mounted again until all containers with
+    # binds are terminated (since it's actually still mounted and CVMFS repos can only be mounted once)
     - name:
       lineinfile:
         path: /etc/autofs.conf
-        line: 'timeout = 7200'
+        line: "{{ item.line }}"
         insertafter: '^\[ autofs \]$'
-        regexp: '^[# ]*timeout *=.*'
+        regexp: "{{ item.regexp }}"
         backup: yes
+      loop:
+        - line: 'timeout = 7200'
+          regexp: '^[# ]*timeout *=.*'
+        - line: 'logging = verbose'
+          regexp: '^[# ]*logging *=.*'
+      notify:
+        - restart autofs
 
     - name: Import Docker CE RPM key
       rpm_key:
@@ -103,6 +111,12 @@
     #  docker_image:
     #    name: quay.io/bgruening/docker-jupyter-notebook:ie2
     #    source: pull
+
+  handlers:
+    - name: restart autofs
+      service:
+        name: autofs
+        state: restarted
 
   tags: system
 
