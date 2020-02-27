@@ -80,18 +80,18 @@ slurm_nodes:
     NodeAddr: "{{ hostvars[groups.galaxynodes[0]].ansible_host }}"
     CPUs: "{{ hostvars[groups.galaxynodes[0]].slurm_cpus }}"
     RealMemory: "{{ hostvars[groups.galaxynodes[0]].slurm_real_memory }}"
-  - name: "{{ groups.galaxynodes[1] }}"
-    NodeAddr: "{{ hostvars[groups.galaxynodes[1]].ansible_host }}"
-    CPUs: "{{ hostvars[groups.galaxynodes[1]].slurm_cpus }}"
-    RealMemory: "{{ hostvars[groups.galaxynodes[1]].slurm_real_memory }}"
-  - name: "{{ groups.galaxynodes[2] }}"
-    NodeAddr: "{{ hostvars[groups.galaxynodes[2]].ansible_host }}"
-    CPUs: "{{ hostvars[groups.galaxynodes[2]].slurm_cpus }}"
-    RealMemory: "{{ hostvars[groups.galaxynodes[2]].slurm_real_memory }}"
-  - name: "{{ groups.galaxynodes[3] }}"
-    NodeAddr: "{{ hostvars[groups.galaxynodes[3]].ansible_host }}"
-    CPUs: "{{ hostvars[groups.galaxynodes[3]].slurm_cpus }}"
-    RealMemory: "{{ hostvars[groups.galaxynodes[3]].slurm_real_memory }}"
+  #- name: "{{ groups.galaxynodes[1] }}"
+  #  NodeAddr: "{{ hostvars[groups.galaxynodes[1]].ansible_host }}"
+  #  CPUs: "{{ hostvars[groups.galaxynodes[1]].slurm_cpus }}"
+  #  RealMemory: "{{ hostvars[groups.galaxynodes[1]].slurm_real_memory }}"
+  #- name: "{{ groups.galaxynodes[2] }}"
+  #  NodeAddr: "{{ hostvars[groups.galaxynodes[2]].ansible_host }}"
+  #  CPUs: "{{ hostvars[groups.galaxynodes[2]].slurm_cpus }}"
+  #  RealMemory: "{{ hostvars[groups.galaxynodes[2]].slurm_real_memory }}"
+  #- name: "{{ groups.galaxynodes[3] }}"
+  #  NodeAddr: "{{ hostvars[groups.galaxynodes[3]].ansible_host }}"
+  #  CPUs: "{{ hostvars[groups.galaxynodes[3]].slurm_cpus }}"
+  #  RealMemory: "{{ hostvars[groups.galaxynodes[3]].slurm_real_memory }}"
   #- name: "{{ groups.galaxynodes[4] }}"
   #  NodeAddr: "{{ hostvars[groups.galaxynodes[4]].ansible_host }}"
   #  CPUs: "{{ hostvars[groups.galaxynodes[4]].slurm_cpus }}"
@@ -112,9 +112,9 @@ slurm_nodes:
 slurm_partitions:
   - name: debug
     Default: YES
-    Nodes: "{{ cluster_name }}n[0-3]"
+    #Nodes: "{{ cluster_name }}n[0-3]"
     #Nodes: "{{ cluster_name }}n[0-7]"
-    #Nodes: "{{ cluster_name }}n0"
+    Nodes: "{{ cluster_name }}n0"
     State: UP
     DefMemPerCPU: 2990
     LLN: YES
