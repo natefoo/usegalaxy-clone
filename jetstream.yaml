@@ -148,12 +148,20 @@
         content: |
           {{ galaxy_data_path }}   {{ (ansible_default_ipv4.network ~ '/' ~ ansible_default_ipv4.netmask) | ipaddr('net') }}(rw,no_subtree_check,no_root_squash)
         dest: /etc/exports.d/galaxy.exports
+      notify: restart nfs servers
 
-    - name: Enable and (re)start nfs services
+    - name: Enable and start nfs services
+      service:
+        name: nfs-server
+        state: started
+        enabled: yes
+
+  handlers:
+
+    - name: Restart nfs services
       service:
         name: nfs-server
         state: restarted
-        enabled: yes
 
 
 - name: Galaxy node initial setup
