@@ -16,6 +16,8 @@ clone0n4 ansible_host=10.2.0.24
 clone0n5 ansible_host=10.2.0.12
 clone0n6 ansible_host=10.2.0.3
 clone0n7 ansible_host=10.2.0.21
+clone0n8 ansible_host=10.2.0.15
+clone0n9 ansible_host=10.2.0.5
 
 [galaxynodes:vars]
 os_flavor = m1.large
