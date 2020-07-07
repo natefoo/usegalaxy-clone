@@ -13,10 +13,10 @@
           run_once: true
           delegate_to: localhost
 
-        - name: Find current JS-API-Featured-CentOS7 image
-          set_fact:
-            os_image: "{{ ( openstack_image | selectattr('name', 'match', '(?i)^JS-API-Featured-CentOS7-[A-Z]{3}-\\d{1,2}-\\d{4}$') | list | last ).id }}"
-          run_once: true
+        #- name: Find current JS-API-Featured-CentOS7 image
+        #  set_fact:
+        #    os_image: "{{ ( openstack_image | selectattr('name', 'match', '(?i)^JS-API-Featured-CentOS7-[A-Z]{3}-\\d{1,2}-\\d{4}$') | list | last ).id }}"
+        #  run_once: true
 
         - name: Create network
           os_network:
