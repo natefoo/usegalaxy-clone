@@ -15,6 +15,11 @@ developed the playbook orginically for the first node) the Galaxy GID was alread
 3. Set slurm_create_user and slurm_user once created on controller. Could also precreate.
 4. Set galaxy_group and galaxy_user once created on Galaxy server. Could also precreate.
 
+**Scaling up/down**
+
+Server becomes an exec host when not being used for workshops. When transitioning between workshop (scale up) and
+non-workshop (scale down), adjust slurm_roles in group_vars/galaxyservers/vars.yaml accordingly.
+
 **TODO**
 
 - Pull sanitize_whitelist.txt and integrated_tool_panel.xml from Github so they don't get out of date.
