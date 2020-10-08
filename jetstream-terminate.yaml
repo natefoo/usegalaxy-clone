@@ -1,0 +1,16 @@
+- name: Terminate instances
+  hosts: terminate
+  gather_facts: no
+  environment:
+    OS_CLOUD: "{{ os_cloud_id }}"
+    OS_IDENTITY_API_VERSION: '3'
+  tasks:
+    - name: Instance terminate block
+      block:
+
+        - name: Terminate instance
+          os_server:
+            cloud: "{{ os_cloud_id }}"
+            name: "{{ inventory_hostname }}"
+            state: absent
+          delegate_to: localhost

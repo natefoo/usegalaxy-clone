@@ -15,6 +15,9 @@ nodes:
 launch:
 	ansible-playbook jetstream.yaml $(TAGS_ARG)
 
+terminate:
+	ansible-playbook jetstream-terminate.yaml $(TAGS_ARG)
+
 welcome:
 	ansible galaxyservers -m synchronize -a "src=files/galaxy/welcome/ dest={{ galaxy_welcome_dir }}"
 
