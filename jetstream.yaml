@@ -128,6 +128,7 @@
 
 - name: Galaxy server initial setup
   hosts: galaxyservers
+  become: true
   tasks:
 
     - name: Make Galaxy data filesystem
@@ -166,6 +167,7 @@
 
 - name: Galaxy node initial setup
   hosts: galaxynodes
+  become: true
   tasks:
 
     - name: Mount Galaxy data filesystem

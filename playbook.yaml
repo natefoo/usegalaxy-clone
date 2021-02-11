@@ -2,6 +2,7 @@
 
 - name: Install system components
   hosts: all
+  become: true
 
   pre_tasks:
     - name: Gathering Facts
