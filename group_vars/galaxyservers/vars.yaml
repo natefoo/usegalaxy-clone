@@ -399,8 +399,8 @@ galaxy_mutable_config_templates:
 #
 
 gie_proxy_dir: /srv/gie-proxy/proxy
-gie_proxy_git_repo: https://github.com/natefoo/gie-nodejs-proxy.git
-gie_proxy_git_version: ie2-log-fix
+#gie_proxy_git_repo: https://github.com/natefoo/gie-nodejs-proxy.git
+#gie_proxy_git_version: ie2-log-fix
 gie_proxy_setup_nodejs: nodeenv
 gie_proxy_nodejs_version: "10.13.0"
 gie_proxy_virtualenv: /srv/gie-proxy/venv
