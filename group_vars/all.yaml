@@ -69,6 +69,7 @@ slurm_config:
 
   #FastSchedule: 1
   ReturnToService: 1
+  RebootProgram: /usr/sbin/reboot
 
   JobAcctGatherType: jobacct_gather/cgroup
   JobAcctGatherFrequency: task=15
